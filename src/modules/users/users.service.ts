@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/db/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -20,9 +21,21 @@ export class UsersService {
         email: true,
       },
     });
-    return `User created successfully:${JSON.stringify(user)}`;
+    return user;
   }
   findAllUsers() {
     return this.db.user.findMany();
+  }
+  async findUserByEmail(email: string) {
+    return this.db.user.findUnique({ where: { email } });
+  }
+  async findUserById(id: number) {
+    return this.db.user.findUnique({ where: { id } });
+  }
+  async updateUser(id: number, dto: UpdateUserDto) {
+    return this.db.user.update({ where: { id }, data: dto });
+  }
+  async deleteUser(id: number) {
+    return this.db.user.delete({ where: { id } });
   }
 }
